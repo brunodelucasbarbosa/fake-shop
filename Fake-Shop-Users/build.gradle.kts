@@ -31,7 +31,11 @@ dependencies {
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-
+	implementation("org.mindrot:jbcrypt:0.4")
+	implementation("com.auth0:java-jwt:4.2.1")
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+	implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
+	implementation("org.hibernate.validator:hibernate-validator-cdi:8.0.0.Final")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 

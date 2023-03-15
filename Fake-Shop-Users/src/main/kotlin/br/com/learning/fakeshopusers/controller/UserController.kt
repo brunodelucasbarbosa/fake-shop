@@ -1,35 +1,51 @@
 package br.com.learning.fakeshopusers.controller
 
+import br.com.learning.fakeshopusers.controller.request.UserLoginRequest
 import br.com.learning.fakeshopusers.controller.request.UserRequest
+import br.com.learning.fakeshopusers.dto.UserDTO
+import br.com.learning.fakeshopusers.entity.User
+import br.com.learning.fakeshopusers.security.service.TokenService
 import br.com.learning.fakeshopusers.service.UserService
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/user")
+@Validated
 class UserController(
-    @Autowired private val userService: UserService
+    private val userService: UserService,
+    private val authenticationManager: AuthenticationManager,
+    private val tokenService: TokenService
 ) {
 
     @PostMapping
-    fun create(@RequestBody userRequest: UserRequest): ResponseEntity<Any> {
-        return ResponseEntity.ok(userService.create(userRequest))
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@RequestBody userRequest: UserRequest): UserDTO {
+        return userService.create(userRequest)
     }
 
-    @GetMapping
-    fun findById(@PathVariable("id") id: Long): ResponseEntity<Any> {
-        return ResponseEntity.ok(userService.findById(id))
+    @PostMapping("/login")
+    fun login(@RequestBody userLoginRequest: UserLoginRequest): String {
+        val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(
+            userLoginRequest.email,
+            userLoginRequest.password)
+        val authenticate = this.authenticationManager.authenticate(usernamePasswordAuthenticationToken)
+
+        val user = authenticate.principal as User
+        return tokenService.generateToken(user)
     }
 
-    @DeleteMapping
-    fun delete(@PathVariable("id") id: Long): ResponseEntity<Any> {
+    @GetMapping("/{id}")
+    fun findById(@PathVariable id: Long): UserDTO {
+        return userService.findById(id)
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: Long): ResponseEntity<Any> {
         return ResponseEntity.ok(userService.delete(id))
     }
 }

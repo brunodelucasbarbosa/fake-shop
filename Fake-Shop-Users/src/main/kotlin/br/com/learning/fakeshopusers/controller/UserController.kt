@@ -4,6 +4,7 @@ import br.com.learning.fakeshopusers.controller.request.UserLoginRequest
 import br.com.learning.fakeshopusers.controller.request.UserRequest
 import br.com.learning.fakeshopusers.dto.UserDTO
 import br.com.learning.fakeshopusers.entity.User
+import br.com.learning.fakeshopusers.kafka.KafkaProducer
 import br.com.learning.fakeshopusers.security.service.TokenService
 import br.com.learning.fakeshopusers.service.UserService
 import org.springframework.http.HttpStatus
@@ -19,7 +20,8 @@ import org.springframework.web.bind.annotation.*
 class UserController(
     private val userService: UserService,
     private val authenticationManager: AuthenticationManager,
-    private val tokenService: TokenService
+    private val tokenService: TokenService,
+    private val kafkaProducer: KafkaProducer
 ) {
 
     @PostMapping
@@ -36,6 +38,7 @@ class UserController(
         val authenticate = this.authenticationManager.authenticate(usernamePasswordAuthenticationToken)
 
         val user = authenticate.principal as User
+        kafkaProducer.sendMessage("User ${user.full_name} logged in")
         return tokenService.generateToken(user)
     }
 

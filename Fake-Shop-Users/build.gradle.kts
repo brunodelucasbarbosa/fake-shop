@@ -36,13 +36,17 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
 	implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
 	implementation("org.hibernate.validator:hibernate-validator-cdi:8.0.0.Final")
+	implementation("org.springframework.kafka:spring-kafka")
+
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 dependencyManagement {
